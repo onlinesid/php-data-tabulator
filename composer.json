@@ -3,6 +3,7 @@
   "description": "A PHP library to transform rows into an aggregated table",
   "minimum-stability": "dev",
   "license": "MIT",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Sid Bachtiar",
