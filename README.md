@@ -33,6 +33,16 @@ A PHP library to turn rows of data (e.g.: from database query result) into aggre
     //    Joan (1)          11               2.3
     //    Robb (2)           0               8.7
 
+    // Get array with columns ordering
+    $arr = $table->toArray(true, false, ['DR', 'PK',]);
+    
+    // Expected result ($arr) is something like:
+    //
+    //    Name       Driving (DR)     Packing (PK)
+    //    Joan (1)          2.3              11
+    //    Robb (2)          8.7               0
+    
+
 ## Running the tests
 
     $ php bin/phpunit
