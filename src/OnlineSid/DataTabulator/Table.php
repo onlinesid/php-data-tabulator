@@ -104,6 +104,19 @@ class Table
 
     /**
      * @param int $index
+     * @return mixed
+     */
+    public function getColumnID($index)
+    {
+        if ($index == 0) return $this->data[0][0];
+
+        $keys = array_keys($this->unique_columns);
+
+        return $this->unique_columns[$keys[$index-1]]['id'];
+    }
+
+    /**
+     * @param int $index
      * @return string
      */
     public function getColumnLabel($index)
@@ -129,10 +142,24 @@ class Table
     }
 
     /**
+     * @param int $index
+     * @return string
+     */
+    public function getRowID($index)
+    {
+        if ($index == 0) return $this->data[0][0];
+
+        $keys = array_keys($this->unique_rows);
+
+        return $this->unique_rows[$keys[$index-1]]['id'];
+    }
+
+    /**
      * @param bool $include_headers
+     * @param bool $return_labels if false the row/col IDs will be returned rather than the labels
      * @return array
      */
-    public function toArray($include_headers)
+    public function toArray($include_headers, $return_labels=true)
     {
         $arr = [];
 
@@ -140,16 +167,19 @@ class Table
         if ($include_headers) {
             $row = [];
             for ($c=0; $c < $this->getNbColumns(); $c++) {
-                $row[] = $this->getColumnLabel($c);
+                $row[] = ($return_labels) ? $this->getColumnLabel($c) : $this->getColumnID($c);
             }
             $arr[] = $row;
         }
 
-        for ($r=0; $r < $this->getNbRows(); $r++) {
-            $row = [$this->getRowLabel($r)];
-            for ($c=0; $c < $this->getNbColumns(); $c++) {
-
+        for ($r=1; $r < $this->getNbRows(); $r++) {
+            $row = [
+                ($return_labels) ? $this->getRowLabel($r) : $this->getRowID($r),
+            ];
+            for ($c=1; $c < $this->getNbColumns(); $c++) {
+                $row[] = $this->getAggregateValueFromRowCol($r, $c);
             }
+            $arr[] = $row;
         }
 
         return $arr;

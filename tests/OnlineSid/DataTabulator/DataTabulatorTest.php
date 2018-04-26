@@ -12,8 +12,6 @@ class DataTabulatorTest extends PHPUnit_Framework_TestCase
      */
     function test1()
     {
-        parent::setUp();
-
         $rows = [
             ['id' => 7, 'u_id' => 1, 'u_name' => 'Joan', 'a_id' => 'PK', 'a_name' => 'Packing', 'num' => 10.5, ],
             ['id' => 4, 'u_id' => 1, 'u_name' => 'Joan', 'a_id' => 'PK', 'a_name' => 'Packing', 'num' =>  0.5, ],
@@ -50,5 +48,47 @@ class DataTabulatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $table->getAggregateValueFromRowCol(2, 1));
         $this->assertEquals(2.3, $table->getAggregateValueFromRowCol(1, 2));
         $this->assertEquals(8.7, $table->getAggregateValueFromRowCol(2, 2));
+
+        // testing with headers included
+        $arr = $table->toArray(true);
+        // first row
+        $this->assertEquals('Name', $arr[0][0]);
+        $this->assertEquals('Packing', $arr[0][1]);
+        $this->assertEquals('Driving', $arr[0][2]);
+        // second row
+        $this->assertEquals('Joan', $arr[1][0]);
+        $this->assertEquals(11, $arr[1][1]);
+        $this->assertEquals(2.3, $arr[1][2]);
+        // third row
+        $this->assertEquals('Robb', $arr[2][0]);
+        $this->assertEquals(0, $arr[2][1]);
+        $this->assertEquals(8.7, $arr[2][2]);
+
+        // testing with headers excluded
+        $arr = $table->toArray(false);
+        // first row
+        $this->assertEquals('Joan', $arr[0][0]);
+        $this->assertEquals(11, $arr[0][1]);
+        $this->assertEquals(2.3, $arr[0][2]);
+        // second row
+        $this->assertEquals('Robb', $arr[1][0]);
+        $this->assertEquals(0, $arr[1][1]);
+        $this->assertEquals(8.7, $arr[1][2]);
+
+        // testing with headers included AND returning row/col IDs instead of row/col labels
+        $arr = $table->toArray(true, false);
+        // first row
+        $this->assertEquals('Name', $arr[0][0]);
+        $this->assertEquals('PK', $arr[0][1]);
+        $this->assertEquals('DR', $arr[0][2]);
+        // second row
+        $this->assertEquals(1, $arr[1][0]);
+        $this->assertEquals(11, $arr[1][1]);
+        $this->assertEquals(2.3, $arr[1][2]);
+        // third row
+        $this->assertEquals(2, $arr[2][0]);
+        $this->assertEquals(0, $arr[2][1]);
+        $this->assertEquals(8.7, $arr[2][2]);
+
     }
 }
