@@ -62,6 +62,21 @@ class Table
     }
 
     /**
+     * Returns aggregate value, given row index and column index (they are NOT row ID and col ID!!!)
+     *
+     * @param int $r row index, starts from 1 because 0 is the row label
+     * @param int $c col index, starts from 1 because 0 is the col label
+     * @return mixed
+     */
+    public function getAggregateValueFromRowCol($r, $c)
+    {
+        $columns = array_keys($this->unique_columns);
+        $rows    = array_keys($this->unique_rows);
+
+        return $this->getAggregateValue($rows[$r-1], $columns[$c-1]);
+    }
+
+    /**
      * @param mixed $row_id
      * @param mixed $col_id
      * @return mixed
@@ -113,4 +128,30 @@ class Table
         return $this->unique_rows[$keys[$index-1]]['name'];
     }
 
+    /**
+     * @param bool $include_headers
+     * @return array
+     */
+    public function toArray($include_headers)
+    {
+        $arr = [];
+
+        // headers
+        if ($include_headers) {
+            $row = [];
+            for ($c=0; $c < $this->getNbColumns(); $c++) {
+                $row[] = $this->getColumnLabel($c);
+            }
+            $arr[] = $row;
+        }
+
+        for ($r=0; $r < $this->getNbRows(); $r++) {
+            $row = [$this->getRowLabel($r)];
+            for ($c=0; $c < $this->getNbColumns(); $c++) {
+
+            }
+        }
+
+        return $arr;
+    }
 }

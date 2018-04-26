@@ -45,5 +45,10 @@ class DataTabulatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( 'Name', $table->getRowLabel(0));
         $this->assertEquals( 'Joan', $table->getRowLabel(1));
         $this->assertEquals( 'Robb', $table->getRowLabel(2));
+
+        $this->assertEquals(11, $table->getAggregateValueFromRowCol(1, 1));
+        $this->assertEquals(0, $table->getAggregateValueFromRowCol(2, 1));
+        $this->assertEquals(2.3, $table->getAggregateValueFromRowCol(1, 2));
+        $this->assertEquals(8.7, $table->getAggregateValueFromRowCol(2, 2));
     }
 }
