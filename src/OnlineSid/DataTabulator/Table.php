@@ -155,13 +155,69 @@ class Table
     }
 
     /**
+     * @param array $new_orders
+     */
+    private function reorderUniqueColumns(array $new_orders)
+    {
+        $new_columns = [];
+        $new_data = [];
+
+        $maps = [];
+
+        foreach ($new_orders as $i => $id)
+        {
+            // reorder unique columns
+            $old_index = 0;
+            foreach ($this->unique_columns as $old_key => $old_col) {
+                if ($old_key == $id) {
+                    $new_columns[$id] = $this->unique_columns[$id];
+
+                    // map from old to new index
+                    $maps[$old_index+1] = $i+1;
+
+                    continue;
+                }
+                $old_index++;
+            }
+        }
+
+        // we also need to re-order $this->data
+        foreach ($this->data as $old_row) {
+            $new_row = [
+                $old_row[0],
+            ];
+
+            for ($old_index = 1; $old_index < count($old_row); $old_index++) {
+                $new_row[$maps[$old_index]] = $old_row[$old_index];
+            }
+
+            $new_data[] = $new_row;
+        }
+
+        unset($this->unique_columns);
+        unset($this->data);
+        $this->data = $new_data;
+        $this->unique_columns = $new_columns;
+    }
+
+    /**
      * @param bool $include_headers
      * @param bool $return_labels if false the row/col IDs will be returned rather than the labels
+     * @param null|array $col_ids_order order based on col IDs
      * @return array
      */
-    public function toArray($include_headers, $return_labels=true)
+    public function toArray($include_headers, $return_labels=true, $col_ids_order=null)
     {
         $arr = [];
+
+        if ($col_ids_order !== null) {
+            // preserve
+            $unique_columns = $this->unique_columns;
+            $data = $this->data;
+
+            // change the orders
+            $this->reorderUniqueColumns($col_ids_order);
+        }
 
         // headers
         if ($include_headers) {
@@ -180,6 +236,12 @@ class Table
                 $row[] = $this->getAggregateValueFromRowCol($r, $c);
             }
             $arr[] = $row;
+        }
+
+        if ($col_ids_order !== null) {
+            // restore
+            $this->unique_columns = $unique_columns;
+            $this->data = $data;
         }
 
         return $arr;
